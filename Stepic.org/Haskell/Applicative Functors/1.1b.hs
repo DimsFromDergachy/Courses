@@ -2,7 +2,7 @@
 
 import Prelude hiding (pure)
 
-class Functor f = Pointed f where
+class Functor f => Pointed f where
   pure :: a - f a
 
 instance Pointed Maybe where
