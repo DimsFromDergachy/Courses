@@ -1,5 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
+import Control.Applicative hiding (many)
 import Data.Char (digitToInt, isDigit)
 
 -- Evolution of parsers:
@@ -21,6 +22,13 @@ instance Applicative Parser where
         (f, s')  <- apply pf s
         (x, s'') <- apply px s'
         return (f x, s'')
+
+instance Alternative Parser where
+    empty = Parser $ const []
+    p1 <|> p2 = Parser $ \s -> apply p1 s <||> apply p2 s
+      where
+        [] <||> y = y
+        x  <||> _ = x
 
 parse :: Parser a -> String -> a
 parse p = fst . head . apply p
@@ -61,4 +69,12 @@ count :: Int -> Parser a -> Parser [a]
 count n = sequenceP . replicate n
 
 many :: Parser a -> Parser [a]
-many = undefined
+many p = (:) <$> p <*> many p <|> pure []
+
+many1 :: Parser a -> Parser [a]
+many1 p = (:) <$> p <*> many p
+
+number :: Parser Int
+number = toInt <$> many1 digit
+  where
+    toInt = foldl ((+) . (* 10)) 0
