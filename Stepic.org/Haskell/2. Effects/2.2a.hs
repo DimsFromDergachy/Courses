@@ -27,3 +27,12 @@ asum = foldr (<|>) empty
 
 -- asum $ fmap Just tree             ==>  Just 4
 -- asum $ fmap (const Nothing) tree  ==> Nothing
+
+sequenceA_ :: (Foldable t, Applicative f) => t (f a) -> f ()
+sequenceA_ = foldr (*>) (pure ())
+
+-- sequenceA_ $ fmap Just tree             ==>  Just ()
+-- sequenceA_ $ fmap (const Nothing) tree  ==>  Nothing
+
+-- sequenceA_ $ fmap Right tree               ==>  Right ()
+-- sequenceA_ $ fmap (\_ -> Left "Foo") tree  ==>  Left "Foo"
