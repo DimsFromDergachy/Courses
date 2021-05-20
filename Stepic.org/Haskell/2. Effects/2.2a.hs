@@ -34,5 +34,18 @@ sequenceA_ = foldr (*>) (pure ())
 -- sequenceA_ $ fmap Just tree             ==>  Just ()
 -- sequenceA_ $ fmap (const Nothing) tree  ==>  Nothing
 
--- sequenceA_ $ fmap Right tree               ==>  Right ()
--- sequenceA_ $ fmap (\_ -> Left "Foo") tree  ==>  Left "Foo"
+-- sequenceA_ $ fmap Right tree  ==>  Right ()
+-- sequenceA_ $ fmap Left  tree  ==>  Left  4
+
+
+foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
+foldMap f = foldr (mappend . f) mempty
+
+traverse_ :: (Foldable t, Applicative f) => (a -> f b) -> t a -> f ()
+traverse_ f = foldr ((*>) . f) (pure ())
+
+-- traverse_ Just tree             ==>  Just ()
+-- traverse_ (const Nothing) tree  ==>  Nothing
+
+-- traverse_ Right tree  ==>  Right ()
+-- traverse_ Left  tree  ==>  Left  4
