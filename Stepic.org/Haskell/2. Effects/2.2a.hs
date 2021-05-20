@@ -37,6 +37,24 @@ sequenceA_ = foldr (*>) (pure ())
 -- sequenceA_ $ fmap Right tree  ==>  Right ()
 -- sequenceA_ $ fmap Left  tree  ==>  Left  4
 
+sequenceAtoList :: (Foldable t, Applicative f) => t (f a) -> f [a]
+sequenceAtoList = foldr (\x y -> (:) <$> x <*> y) (pure [])
+
+-- sequenceAtoList $ fmap        Just     tree  ==>  Just [4,2,1,3,5]
+-- sequenceAtoList $ fmap (const Nothing) tree  ==>  Nothing
+
+sequenceA' :: (Foldable t, Applicative f, Monoid m) => t (f m) -> f m
+sequenceA' = foldr (\x y -> mappend <$> x <*> y) (pure mempty)
+
+-- This implementation is impossible for Foldable,
+-- thus Foldable could not create the original structure
+sequenceA :: (Foldable t, Applicative f) => t (f a) -> f (t a)
+sequenceA = impossible
+  where
+    impossible = undefined
+
+
+----------------------------------------------------------------------------------
 
 foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
 foldMap f = foldr (mappend . f) mempty
@@ -49,3 +67,6 @@ traverse_ f = foldr ((*>) . f) (pure ())
 
 -- traverse_ Right tree  ==>  Right ()
 -- traverse_ Left  tree  ==>  Left  4
+
+traverse :: (Foldable t, Applicative f, Monoid m) => (a -> f m) -> t a -> f m
+traverse f = foldr (\x y -> mappend <$> f x <*> y) (pure mempty)
