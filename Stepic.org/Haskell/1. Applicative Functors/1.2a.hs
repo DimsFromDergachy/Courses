@@ -18,5 +18,5 @@ instance Functor ZipList where
     fmap f (ZipList xs) = ZipList $ map f xs
 
 instance Applicative ZipList where
-    pure x = ZipList [x]
+    pure x = ZipList $ repeat x
     ZipList fs <*> ZipList xs = ZipList $ zipWith ($) fs xs
