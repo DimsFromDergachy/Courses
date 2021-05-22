@@ -70,3 +70,6 @@ traverse_ f = foldr ((*>) . f) (pure ())
 
 traverse :: (Foldable t, Applicative f, Monoid m) => (a -> f m) -> t a -> f m
 traverse f = foldr (\x y -> mappend <$> f x <*> y) (pure mempty)
+
+traverse2list :: (Foldable t, Applicative f) => (a -> f b) -> t a -> f [b]
+traverse2list f = foldr (\x y -> (:) <$> f x <*> y) (pure [])
