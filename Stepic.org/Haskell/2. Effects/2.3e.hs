@@ -1,4 +1,5 @@
 
+import Data.Functor.Const
 import Data.Functor.Identity
 
 data Result a = Error | OK a
@@ -16,3 +17,9 @@ fmapDefault f = runIdentity . traverse (Identity . f)
 
 instance Functor Result where
     fmap = fmapDefault
+
+foldMapDefault :: (Monoid m, Traversable t) => (a -> m) -> t a -> m
+foldMapDefault f = getConst . traverse (Const . f)
+
+instance Foldable Result where
+    foldMap = foldMapDefault
